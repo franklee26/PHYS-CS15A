@@ -1,7 +1,7 @@
 # PHYS-CS15A
 (PHYS13AH files)
 
-Hello! This is my repository for PHYS CS15A (or 15AH depending on what department). This repo contains code from homework assignments or experiments. 
+Hello! This is my repository for PHYS CS15A (or 13AH depending on what department). This repo contains code from homework assignments or experiments. 
 
 As of 9/10/17:
 
