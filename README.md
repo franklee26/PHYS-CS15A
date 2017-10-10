@@ -5,4 +5,4 @@ Hello! This is my repository for PHYS CS15A (or 15AH depending on what departmen
 
 As of 9/10/17:
 
-V.1 and V.2 indicate completed code (in Python) for homework 1. 
+V.1 and V.2 indicate completed code (in Python) for homework 1.
