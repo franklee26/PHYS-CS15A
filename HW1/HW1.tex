@@ -1,0 +1,304 @@
+\documentclass[11pt, oneside]{article} 
+\usepackage[margin=1in]{geometry} 	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\graphicspath{{/Users/franklee/Desktop/PICS/}}								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{esint}
+\usepackage{float}
+  		% Activate to begin paragraphs with an empty line rather than an indent
+				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{ragged2e}								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+			% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode\
+							% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{setspace}
+\usepackage{esint}	
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{fancyhdr}
+\definecolor{mygray}{rgb}{0.9,0.9,0.9}
+\lstset{%
+basicstyle=\ttfamily,
+breaklines = true,
+backgroundcolor=\color{mygray},
+}
+\usepackage{realboxes}
+\usepackage{xcolor}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{PHYS CS15A: Homework 1}
+\fancyhead[RE,LO]{Frank Lee}
+\cfoot{\thepage}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{exmp}{Example}[section]
+\title{PHYS CS15A: Homework 1}
+\author{Frank Lee}
+\date{\today}							% Activate to display a given date or no date							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+\section{example\_plot.py}
+Consider the following three figures produced from example\_plot.py. The algorithms and code used will be explained afterwards. 
+\begin{figure}[H]
+\includegraphics[scale=0.8]{Figure_1}
+\centering
+\caption{Figure 1 produced by example\_plot.py}
+\end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.8]{Figure_2}
+\centering
+\caption{Figure 2 produced by example\_plot.py}
+\end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.8]{Figure_3}
+\centering
+\caption{Figure 3 produced by example\_plot.py}
+\end{figure}
+\noindent
+Figure 1 is simply a plot of the function $e^{-0.1x}\cos{x}$ where $x\in[0,20]$. The function was plotted by standard means from Python's \Colorbox{mygray}{\lstinline|matplotlib|} library: 
+\begin{lstlisting}[language=Python, caption= Plotting figure 1]
+import matplotlib.pyplot as plt
+import numpy as np
+
+x_values = np.linspace(0,20,100)
+y_values = (np.exp(-0.1*x_values))*(np.cos(x_values))  								
+plt.figure(1) 	
+plt.title("Plot of y=e^(-0.1x)cos(x)")						
+plt.plot(x_values, y_values) 							
+\end{lstlisting}
+
+\noindent
+Figure 2 is a plot of just the data values\footnote{That I fabricated so that it looks like the data values 'fit' $e^{-0.1x}\cos{x}$}, provided by the external file data.txt. We therefore must pull the data from our external file via the lines:
+\begin{lstlisting}[language=Python, caption=Plotting figure 2]
+ExperimentInput = np.loadtxt("data.txt", delimiter=",")	
+Experiment = np.transpose(ExperimentInput)
+
+x_data = Experiment[0]									
+y_data = Experiment[1]
+y_error = Experiment[2]	
+
+plt.figure(2)											
+plt.errorbar(x_data, y_data, yerr=y_error, fmt='kx')	#plotting the data points
+plt.title("Actual plot of the data (should look like y~e^(-0.1x)cos(x))")				
+\end{lstlisting}
+\noindent
+We then superimpose our data with the actual plot of $e^{-0.1x}\cos{x}$. We simply just reuse the lines we had for figures 1 and 2 such that we have: 
+\begin{lstlisting}[language=Python, caption=Plotting figure 2]
+plt.figure(3)
+plt.plot(x_values, y_values) 							
+plt.errorbar(x_data, y_data, yerr=y_error, fmt='ro')			
+\end{lstlisting}
+with of course our title and axis labels. 
+\newpage
+\section{RateT.py}
+Arrhenius's Equation relates the rate constant $k$ of a particular chemical reaction to its absolute temperature, $T$ by the equation
+\begin{equation}
+k=Ae^{-E_a/RT}
+\end{equation}
+where $A$ is a prefactor constant, $E_a$ is the activation energy and $R$ is the gas constant\footnote{$R\approx 8.314\ \text{J}\text{K}^{-1}\text{mol}^{-1}$}. Taking the natural log of equation (1) gives:
+\begin{equation}
+\ln{k}=-\dfrac{E_a}{R}\dfrac{1}{T}+\ln{A}
+\end{equation}
+Equation (2) implies that plotting $1/T$ against $\ln{k}$ gives a straight line. We will use this method to determine the activation energy and the prefactor constant. 
+\subsection{Part (a)}
+We need the absolute temperature instead of temperature in degrees celsius. This conversion can be done by the following: 
+\begin{lstlisting}[language=Python, caption=Establishing our data points from RateT.txt]
+RawInputValues=np.loadtxt("RateT.txt",delimiter=",")
+InputValues=np.transpose(RawInputValues)
+TempKelvin=InputValues[0]+273.15							#converting from Celsius to Kelvin
+RateConstant=InputValues[1]			
+\end{lstlisting}
+\subsection{Parts (b), (c) and (d)}
+As indicated by equation (2), we must plot $1/T$ against $\ln{k}$ in order to get a straight line. Therefore, we plot:
+\begin{lstlisting}[language=Python, caption=Plotting RateT.txt in an Arrhenius plot]
+plt.figure(1)
+plt.errorbar(1/TempKelvin, np.log(RateConstant), fmt="ro")		
+\end{lstlisting}
+We can also include a linear best fit using \Colorbox{mygray}{\lstinline|numpy.polyfit()|}. Define $m$ and $b$ to be the slope and y-intercept of our best fit respectively. We can then have
+\begin{lstlisting}[language=Python, caption=Determining and plotting the line of best fit (linear regression)]
+m,b=np.polyfit(1/TempKelvin, np.log(RateConstant),1)		#Assuming a linear best fit
+plt.plot(1/TempKelvin,m*(1/TempKelvin)+b,'-')		
+\end{lstlisting}
+With this, we can plot our data points along with our line of best fit such that
+\begin{figure}[H]
+\includegraphics[scale=0.8]{ARR}
+\centering
+\caption{Figure 1 produced by example\_plot.py}
+\end{figure}
+\noindent
+We can just retrieve our $m$ and $b$ value by simply executing \Colorbox{mygray}{\lstinline|print(m,b)|}, which shows us $m=-2001.529...$ and $b=4.606...$. Therefore, $E_a=-R\times -2001.529=16.6\ \text{kJ}$ and $A=\exp{4.606}=100.2$. Therefore:
+\begin{equation}
+\boxed{E_a=16.6\ \text{kJ}}\ \ \ \boxed{b=100.2}
+\end{equation}
+\newpage
+\section{HeatCapacity.py}
+\subsection{Part (a)}
+We are given that the specific heat capacity, $C$ is related to the temperature by the following relationship
+\begin{equation}
+C=aT+bT^3
+\end{equation}
+We can just rewrite this as
+\begin{equation}
+C=a(T+bT^3)
+\end{equation}
+where $a,b\in\mathbb{R}$ are different constants than that from (4). We want to rewrite (4) so that it looks like (5) since given the 'correct' or best fit value of $b$, we know that:
+\begin{equation}
+\dfrac{C}{(T+bT^3)}=a
+\end{equation}
+In other words, this ratio must be constant given that we have found the 'right' value of $b$. This is the cornerstone of the method we will use. We will first guess our value of $b$ by iterating $b$ through a range of say $[0,5]$ in arbitrary small increments. For each guess we have  for $b$, we then compute the ratio from (6) using the data values we are given from HeatCapacity.txt and place them in an array (or list in Python). 
+
+\bigskip
+\noindent
+After completing our iteration, we will then have a whole array of constants $a$ for each guess value of $b$. Provided that we have actually iterated through the correct $b$, we should in practise arrive at an array of constants with zero variance. We can place the variances in another array and then implement a simple algorithm that determines the smallest variance. We now have a value for $b$, and so calculating $a$ is relatively straightforward. Below is the code used to find the '$k$' value, which is same as our $b$ value: 
+\begin{lstlisting}[language=Python, caption=Determining the $k$-value in $a(T+kT^3)$]
+def findkvalue():
+	vararray=[]
+	k=0
+	i=0
+	while (k<=0.1):
+		length=len(InputValues[0])
+		constantarray=[]
+		for i in range(0,length):
+			approx=TempValues[i]+k*(TempValues[i])**3
+			actual=HeatCap[i]
+			constant=actual/approx
+			constantarray.append(constant)
+		summ=0
+		for data in constantarray:
+			summ=summ+data
+		mean=summ/length
+		summm=0
+		for moredata in constantarray:
+			summm=summm+(moredata-mean)**2
+		var=summm/length
+		vararray.append(var)
+		k=k+0.001
+	print(vararray)
+	findmin(vararray,len(vararray),0.001)	
+\end{lstlisting}
+Listing 7 involves the calling of another function \Colorbox{mygray}{\lstinline|findmin(array_name,array_length,index_step)|} and is defined as
+\begin{lstlisting}[language=Python, caption=Definition of findmin(...)]
+def findmin(arry,len,indexstep):
+	min=arry[0]
+	for i in range(1,len):
+		if arry[i]<min:
+			min=arry[i]
+			minind=i
+	print("The min value is: ",min," at index: ",minind,".\n")
+	print("Therefore, the k-value is: ",minind*indexstep," with variance: ",min,".")
+\end{lstlisting}
+Here is a brief walk-through of listings 7 and 8. The while loop starting at line 5 assumes that our $k$-value is somewhere in the range $[0,0.1]$. This guess was deduced by trial and error, and also the fact that our data values have low orders of magnitude, so it makes sense for $k$ to be small. Lines 8 to 12 iterate through our given data values and computes the ratio given by equation (6). We then store these constants in the array \Colorbox{mygray}{\lstinline|constantarray[]|}. Now in lines 14 to 21, we compute the mean, which will be used to calculate the variance of these constants for each $k$ and places this variance in another array \Colorbox{mygray}{\lstinline|vararray[]|}. Line 22 indicates we are incrementing $k$ in values of $0.001$ and line 23 is simply placed so that we can simply see the array we have created for checking purposes. Finally, we have line 24, which not only calculates the minimum variance in each \Colorbox{mygray}{\lstinline|vararray[]|} for each $k$ but it also calculates the $k$-value, based on the index position in the array. 
+\subsection{Part  (b)}
+Using our method from part (a), we can calculate the value of $k$ to be exactly $k=0.005$. This is because in our \Colorbox{mygray}{\lstinline|vararray[]|}, it was found that a $k$ value of $0.005$ had \textit{zero} variance. Now that we have $k$ for $a(T+kT^3)$, we must determine $a$, which we denote as \Colorbox{mygray}{\lstinline|newconst|}. We do this by implementing the following function:
+\begin{lstlisting}[language=Python, caption=Finding the second constant]
+def findnewconst():
+	length=len(InputValues[0])
+	conss=[]
+	for i in range(0,length):
+		right=TempValues[i]+0.005*(TempValues[i])**3
+		left=HeatCap[i]
+		cc=left/right
+		conss.append(cc)
+	print(conss)
+	av=0
+	for data in conss:
+		av=av+data
+	av=av/length
+	print("The new constant is therefore:",av,".")
+\end{lstlisting}
+Notice in line 5, we use our solution $k=0.005$ and we then compute the ratio as before. Implementing listing 9 gives us $a=2$. We therefore have the following best fit to the data:
+\begin{equation}
+\boxed{C=2(T+0.005T^3)=2T+0.01T^3}
+\end{equation}
+where we put our equation in the original form in (4) such that $\boxed{a=2}$ and $\boxed{b=0.01}$. Plotting equation (7) along side our data points: 
+\begin{figure}[H]
+\includegraphics[scale=0.85]{BEST}
+\centering
+\caption{Plot of equation (7) against data points from HeatCapacity.txt}
+\end{figure}
+\newpage
+\section{Flow.py}
+Below are plots using various combinations of $\log()$ scaling. 
+\begin{figure}[H]
+\includegraphics[scale=0.72]{NORMAL}
+\centering
+\caption{Flow rate vs diameter without any changes in scaling}
+\end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.8]{LOGX}
+\centering
+\caption{Flow rate vs diameter with a log scaling in the diameter}
+\end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.8]{LOGY}
+\centering
+\caption{Flow rate vs diameter with a log scaling in the flow rate}
+\end{figure}
+\begin{figure}[H]
+\includegraphics[scale=0.8]{LOGLOG}
+\centering
+\caption{Flow rate vs diameter with a log scaling for both diameter and flow rate}
+\end{figure}
+\subsection{Part (b)}
+Figure 9 with a "log-log" scale gives us the clearest and most descriptive presentation of the data. Figure 9 looks like a straight line, and a straight line plotted on a log-log scale indicates a \textit{power} relationship. This power relationship makes it difficult to observe data on a 'normal' scale in that data is often clumped at one end and spread on another (apparent in figure 6). 
+
+\bigskip
+\noindent
+We now know that the relation is of the form $Ax^k$ where $A=10^b$ and $k=m$ of the linear line with slope $m$ and y-intercept $b$. 
+\subsection{Part (c)}
+We will consider small values and large values of the diameter separately. Since our data value is given in ascending order of diameters, we can simply take the first couple of data points as our 'small' values and the last couple of data points as our 'large' values.
+\begin{lstlisting}[language=Python, caption=Determining behaviour at small values of diameter]
+smalldatax=[]
+smalldatay=[]
+for i in range(0,6):
+	smalldatax.append(np.log10(Diameter[i]))
+	smalldatay.append(np.log10(FlowRate[i]))
+\end{lstlisting}
+Here, we are taking the first $5$ data points and taking their logarithms (and in base 10 since that is what our scaling did). We then attempt to fit a linear line of best fit for these small data values using our standard method:
+\begin{lstlisting}[language=Python]
+m,b=np.polyfit(np.array(smalldatax), np.array(smalldatay),1)
+print(m,b)
+\end{lstlisting}
+which gives us $m=3.981...$ and $b=-0.040...$ and so $F\approx 10^{-0.04}d^{3.981}\approx d^4$. We utilise the same approach for large diameters, but instead we consider the last couple of data points. This means our for-loop iterates through the last couple of indices, which gives us: $m=3.029$ and $b=-0.059$ and so $F\approx 10^{-0.059}d^{3.029}\approx d^3$. Therefore:
+\begin{equation}
+\boxed{F=d^4} \ \ \ \ \ \text{for small }d
+\end{equation}
+\begin{equation}
+\boxed{F=d^3} \ \ \ \ \ \text{for large }d
+\end{equation}
+\subsection{Part (d)}
+\end{document}  
